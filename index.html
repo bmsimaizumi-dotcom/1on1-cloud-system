@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1on1 Cloud System - Premium Login</title>
+    <link rel="stylesheet" href="styles.css?v=10">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen hidden">
+        <div class="login-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
+        <div class="login-card glass-panel">
+            <div class="login-logo glow">
+                <span class="logo-icon large shadow-lg"></span>
+                <h1 style="font-family: 'Outfit', sans-serif;">OneConnect</h1>
+            </div>
+            <h2 class="login-title">アカウントにログイン</h2>
+            <p class="login-subtitle">1on1クラウドシステムへようこそ</p>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="loginUserSelect">ログインする社員</label>
+                    <div class="select-wrapper">
+                        <select id="loginUserSelect" class="login-input premium-input">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">パスワード (テスト用共通: 1234)</label>
+                    <input type="password" id="loginPassword" class="login-input premium-input" placeholder="パスワードを入力">
+                </div>
+                <button type="submit" class="btn btn-primary premium-btn" style="width: 100%; padding: 14px; font-size: 1.05rem; margin-top: 16px; border-radius: 12px; font-weight: 700;">ログイン</button>
+            </form>
+            
+            <p style="margin-top:24px; font-size:0.8rem; color: var(--text-muted);">
+                ※デモ環境のため、パスワードは全角・半角の「1234」でアクセス可能です
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                <h1 style="font-family: 'Outfit', sans-serif;">OneConnect</h1>
+            </div>
+            
+            <div class="user-profile">
+                <div class="avatar shadow-sm" id="currentUserAvatar">U</div>
+                <div class="user-info">
+                    <p class="user-name" id="currentUserName">読み込み中...</p>
+                    <p class="user-role" id="currentUserRole">-</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-view="dashboard" id="navDashboard">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                    ダッシュボード
+                </a>
+                <a href="#" class="nav-item" data-view="history" id="navHistory">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    過去の1on1記録
+                </a>
+                <a href="#" class="nav-item hidden" data-view="admin" id="navAdmin">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg>
+                    管理画面
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding: 24px;">
+                <button class="btn btn-secondary" id="logoutBtn" style="width: 100%; border: 1px solid var(--border); box-shadow: none; border-radius: 12px; font-weight: 600;">ログアウト</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <h2 id="pageTitle" style="font-family: 'Outfit', sans-serif;">Dashboard</h2>
+            </header>
+
+            <div class="content-wrapper">
+                <!-- Dashboard View -->
+                <div id="dashboardView" class="view-section active">
+                    
+                    <div id="noPairsMessage" class="hidden" style="padding: 40px; text-align: center; color: var(--text-muted); background: var(--bg-card); border-radius: var(--radius); border: 1px dashed var(--border);">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 16px; display: block; opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4m0-4h.01"></path></svg>
+                        あなたに関連する1on1の予定はありません。
+                    </div>
+
+                    <!-- Member's own 1on1 Section -->
+                    <div id="memberSessionSection" class="hidden">
+                        <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-main);">あなたが受ける1on1（メンバーとして）</h3>
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <!-- Manager's 1on1 Section (Subordinates) -->
+                    <div id="managerSessionsSection" class="hidden" style="margin-top: 40px;">
+                        <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-main);">あなたが実施する1on1（上長として）</h3>
+                        <div id="managerSessionsList" style="display: flex; flex-direction: column; gap: 24px;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Admin Progress Section -->
+                    <div id="adminProgressSection" class="hidden" style="margin-top: 40px; padding-top: 24px; border-top: 1px dashed var(--border);">
+                        <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--text-main);">全社の1on1進捗状況（管理者用）</h3>
+                        <div id="adminProgressList" style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History View -->
+                <div id="historyView" class="view-section">
+                    <div class="history-list" id="historyListContainer">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div id="historyDetail" class="history-detail hidden">
+                        <button class="btn btn-text" id="backToHistoryBtn" style="margin-bottom: 16px;">← 一覧に戻る</button>
+                        <div class="session-card detail-view" id="historyDetailCard">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin View -->
+                <div id="adminView" class="view-section">
+                    <div class="admin-grid">
+                        
+                        <!-- Employees Settings -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>社員登録・権限設定</h3>
+                                <p class="help-text" style="margin-bottom:0;">社員を追加し、管理画面へのアクセス権限（システム管理者権限）を付与できます。</p>
+                            </div>
+                            <div class="admin-card-body">
+                                <ul id="adminEmpList" class="admin-list">
+                                    <!-- Populated by JS -->
+                                </ul>
+                                <div class="admin-add-form mt-4" style="align-items: center; background: var(--secondary); padding: 16px; border-radius: 8px;">
+                                    <input type="text" id="newEmpName" placeholder="新規社員名 (例: Bさん)">
+                                    <label style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; user-select: none;">
+                                        <input type="checkbox" id="newEmpIsAdmin" style="width: 18px; height: 18px; accent-color: var(--primary);"> 管理者権限
+                                    </label>
+                                    <button class="btn btn-primary" id="addEmpBtn" style="padding: 10px 20px;">追加</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pairing Settings -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>1on1ペア設定 (誰が誰の上司か)</h3>
+                                <p class="help-text" style="margin-bottom:0;">上長とメンバーを紐付けます。「AさんはCさんとDさんの上司」といった設定が可能です。</p>
+                            </div>
+                            <div class="admin-card-body">
+                                <ul id="adminPairList" class="admin-list">
+                                    <!-- Populated by JS -->
+                                </ul>
+                                <div class="admin-add-form mt-4" style="flex-direction: column; align-items: stretch; gap: 12px; background: var(--secondary); padding: 16px; border-radius: 8px;">
+                                    <div style="display:flex; gap:12px; align-items:center;">
+                                        <select id="newPairManager" class="admin-select premium-select" style="flex:1;"></select>
+                                        <span style="color: var(--text-muted);">と</span>
+                                        <select id="newPairMember" class="admin-select premium-select" style="flex:1;"></select>
+                                    </div>
+                                    <div style="display:flex; gap:12px; align-items:center;">
+                                        <select id="newPairFreqType" class="admin-select premium-select" style="flex:1;">
+                                            <option value="monthly">月</option>
+                                            <option value="weekly">週</option>
+                                        </select>
+                                        <select id="newPairFreqCount" class="admin-select premium-select" style="flex:1;">
+                                            <option value="1">1回</option>
+                                            <option value="2">2回</option>
+                                            <option value="3">3回</option>
+                                            <option value="4">4回</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary" id="addPairBtn" style="margin-top: 8px;">ペアを追加</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Questions Settings -->
+                        <div class="admin-card">
+                            <div class="admin-card-header">
+                                <h3>事前提出の質問項目設定</h3>
+                                <p class="help-text" style="margin-bottom:0;">メンバーが1on1の前に回答する質問項目をカスタマイズできます。</p>
+                            </div>
+                            <div class="admin-card-body">
+                                <ul id="adminQuestionList" class="admin-list">
+                                    <!-- Populated by JS -->
+                                </ul>
+                                <div class="admin-add-form mt-4" style="background: var(--secondary); padding: 16px; border-radius: 8px;">
+                                    <input type="text" id="newQuestionInput" placeholder="新しい質問項目を入力...">
+                                    <button class="btn btn-primary" id="addQuestionBtn">質問を追加</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">保存しました</div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="background: rgba(255,255,255,0.95);">
+            <h3>管理画面パスワード</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 20px; color: var(--text-muted);">特定の人だけが入れるよう制限されています。</p>
+            <input type="password" id="adminPasswordInput" class="premium-input" placeholder="パスワードを入力..." style="width: 100%; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="btn btn-text" id="cancelPwdBtn" style="font-weight: 600;">キャンセル</button>
+                <button class="btn btn-primary premium-btn" id="submitPwdBtn" style="padding: 10px 24px;">認証する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Employee Modal -->
+    <div id="editEmpModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="background: rgba(255,255,255,0.95);">
+            <h3>社員情報の編集</h3>
+            <input type="hidden" id="editEmpId">
+            <div style="margin-bottom: 16px;">
+                <label style="font-weight:600; font-size:0.9rem;">社員名</label>
+                <input type="text" id="editEmpNameInput" class="premium-input" style="width: 100%; margin-top: 8px;">
+            </div>
+            <div style="margin-bottom: 24px;">
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; user-select: none;">
+                    <input type="checkbox" id="editEmpIsAdminCheck" style="width: 18px; height: 18px; accent-color: var(--primary);"> システム管理者権限
+                </label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button class="btn btn-text" id="cancelEditEmpBtn" style="font-weight: 600;">キャンセル</button>
+                <button class="btn btn-primary premium-btn" id="saveEditEmpBtn" style="padding: 10px 24px;">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=18"></script>
+</body>
+</html>
