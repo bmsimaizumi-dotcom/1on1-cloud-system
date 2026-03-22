@@ -99,7 +99,20 @@ const saveEditEmpBtn = document.getElementById('saveEditEmpBtn');
 
 // --- Boot Logic ---
 async function bootApp() {
-    await window.loadData();
+    try {
+        if (window.supabase) {
+            await window.loadData();
+        } else {
+            console.error('Supabase not loaded');
+        }
+    } catch(e) {
+        console.error('Boot error:', e);
+    } finally {
+        // 必ずローディング画面を消す
+        const ls = document.getElementById('loadingScreen');
+        if (ls) ls.style.display = 'none';
+    }
+
     loginUserSelect.innerHTML = appState.settings.users.map(u => 
         `<option value="${u.id}">${u.name}</option>`
     ).join('');
@@ -110,10 +123,6 @@ async function bootApp() {
     } else {
         showLogin();
     }
-
-    // ローディング画面を非表示
-    const ls = document.getElementById('loadingScreen');
-    if (ls) ls.style.display = 'none';
 }
 
 function showLogin() {
