@@ -899,4 +899,10 @@ function showToast() {
 }
 
 // Boot application
-bootApp();
+bootApp().catch(function(e) {
+    console.error('Fatal boot error:', e);
+    var ls = document.getElementById('loadingScreen');
+    if (ls) ls.style.display = 'none';
+    var loginEl = document.getElementById('loginScreen');
+    if (loginEl) loginEl.classList.remove('hidden');
+});

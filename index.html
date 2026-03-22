@@ -27,6 +27,11 @@
         setTimeout(function() {
             var ls = document.getElementById('loadingScreen');
             if (ls) ls.style.display = 'none';
+            // If bootApp() failed, force show login screen
+            var loginEl = document.getElementById('loginScreen');
+            if (loginEl && loginEl.classList.contains('hidden')) {
+                loginEl.classList.remove('hidden');
+            }
         }, 8000);
     </script>
 
