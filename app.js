@@ -18,16 +18,20 @@ let appState = {
 window.loadData = async function() {
     try {
         if (!supabase) { console.error('Supabase not initialized'); return; }
-        const [{data: users}, {data: pairings}, {data: sessions}, {data: history}, {data: questions}] = await Promise.all([
+        const [{data: users}, {data: pairings}, {data: sessions}, {data: history}, {data: questions}, {data: settings}] = await Promise.all([
             supabase.from('users').select('*'),
             supabase.from('pairings').select('*'),
             supabase.from('sessions').select('*'),
             supabase.from('history').select('*').order('created_at', {ascending: false}),
-            supabase.from('questions').select('*').order('order_index', {ascending: true})
+            supabase.from('questions').select('*').order('order_index', {ascending: true}),
+            supabase.from('settings').select('*')
         ]);
         appState.settings.users = (users || []).map(u => ({ id: u.id, name: u.name, isAdmin: u.is_admin, password: u.password }));
         appState.settings.pairings = (pairings || []).map(p => ({ id: p.id, managerId: p.manager_id, memberId: p.member_id, frequency: p.frequency }));
         appState.settings.questions = (questions || []).map(q => q.content);
+        // Load admin password from settings table
+        const adminPwdRow = (settings || []).find(s => s.key === 'admin_password');
+        appState.settings.adminPassword = adminPwdRow ? adminPwdRow.value : '123';
         appState.sessions = (sessions || []).map(s => ({
             id: s.id, pairingId: s.pairing_id, date: s.date || '未定', time: s.time || '-', status: s.status, answers: s.answers || [], memberMemo: s.member_memo || '', managerMemo: s.manager_memo || ''
         }));
@@ -243,7 +247,7 @@ submitPwdBtn.addEventListener('click', () => {
         passwordModal.classList.add('hidden');
         activateView(navAdmin, 'admin');
     } else {
-        alert('パスワードが間違っています。(※共通パスワードは「123」です)');
+        alert('パスワードが間違っています。');
     }
 });
 adminPasswordInput.addEventListener('keyup', (e) => {
