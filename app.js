@@ -1,7 +1,14 @@
 // --- Supabase & Global State ---
 const SUPABASE_URL = 'https://rpwkwdkbwmunamgemvpl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd2t3ZGtid211bmFtZ2VtdnBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxNjcyNzYsImV4cCI6MjA4OTc0MzI3Nn0.YGtOkMigwXm0Q__3Ip4n_S8mVU1EijqRFGLIu0zSChw';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase = null;
+try {
+    if (window.supabase && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+} catch(e) {
+    console.error('Supabase init error:', e);
+}
 
 let appState = {
     settings: { users: [], pairings: [], questions: [] },
@@ -10,6 +17,7 @@ let appState = {
 
 window.loadData = async function() {
     try {
+        if (!supabase) { console.error('Supabase not initialized'); return; }
         const [{data: users}, {data: pairings}, {data: sessions}, {data: history}, {data: questions}] = await Promise.all([
             supabase.from('users').select('*'),
             supabase.from('pairings').select('*'),
