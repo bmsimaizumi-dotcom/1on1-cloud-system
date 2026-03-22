@@ -725,7 +725,7 @@ function renderAdmin() {
         return `
         <li class="admin-list-item">
             <span><strong>${m1?.name}</strong> (上長) × <strong>${m2?.name}</strong> (メンバー) <span class="tag" style="margin-left:8px; background-color:#F3E8FF; color:#7E22CE;">${freqText}</span></span>
-            <button class="delete-btn" onclick="deletePair(${p.id})">削除</button>
+            <button class="delete-btn" onclick="deletePair('${p.id}')">削除</button>
         </li>
         `;
     }).join('');
