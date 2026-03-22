@@ -10,6 +10,18 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" style="
+        position:fixed; inset:0; z-index:9999;
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        color:white; font-family:'Inter',sans-serif;
+    ">
+        <div style="font-size:2.5rem; font-weight:700; letter-spacing:-1px; margin-bottom:16px;">OneConnect</div>
+        <div style="font-size:0.95rem; opacity:0.7; margin-bottom:32px;">1on1クラウドシステム</div>
+        <div style="width:48px; height:48px; border:4px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite;"></div>
+        <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
 
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen hidden">
@@ -255,6 +267,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=18"></script>
+    <script src="app.js?v=19"></script>
 </body>
 </html>

@@ -110,6 +110,10 @@ async function bootApp() {
     } else {
         showLogin();
     }
+
+    // ローディング画面を非表示
+    const ls = document.getElementById('loadingScreen');
+    if (ls) ls.style.display = 'none';
 }
 
 function showLogin() {
